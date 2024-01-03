@@ -6,9 +6,11 @@ import(
 	"sync"
 )
 
-func makeRequests(url string,wg *sync.WaitGroup,ch chan int){
+
+func makeRequests(url string,requestMethod string,wg *sync.WaitGroup,ch chan int){
 	defer wg.Done()
 
+	
 	response, err := http.Get(url)
 	if err != nil {
 		// fmt.Println("Some Error Occurred : ",err)
@@ -20,20 +22,27 @@ func makeRequests(url string,wg *sync.WaitGroup,ch chan int){
 
 
 func main(){
-	var url string
+	var url,requestMethod string
 	var numberOfRequests int
-	fmt.Println("Add url = ")
+	fmt.Print("Enter url = ")
 	fmt.Scanln(&url)
 	
-	fmt.Println("Add number of Requests = ")
+	fmt.Print("Enter number of Requests = ")
 	fmt.Scanln(&numberOfRequests)
+
+	fmt.Println("Enter Request method")
+	fmt.Println("1. GET ")
+	fmt.Println("2. POST ")
+	fmt.Println("3. PUT ")
+	fmt.Println("4. PATCH ")
+	fmt.Scanln(&requestMethod)
 
 	var wg sync.WaitGroup 
 	ch := make(chan int, numberOfRequests)
 	
 	for i :=0; i< numberOfRequests; i++{
 		wg.Add(1)
-		go makeRequests(url, &wg, ch)
+		go makeRequests(url,requestMethod, &wg, ch)
 	}
 
 	go func(){
@@ -50,7 +59,7 @@ func main(){
 			failuresCnt +=1
 		}
 	}
-	fmt.Println("Results \n")
+	fmt.Println("\n Results \n")
 	fmt.Println("Total Requests = ",successCnt+failuresCnt)
 	fmt.Println("Successful Requests = ",successCnt)
 	fmt.Println("Failed Requests = ",failuresCnt)
