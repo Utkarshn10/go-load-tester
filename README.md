@@ -2,7 +2,7 @@
 
 API endpoint Load tester written in Go
 
-Note: currently you can only test GET requests. Updates for other requests coming soon.
+Note: currently you can only test GET requests
 
 ## How to use?
 
