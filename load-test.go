@@ -4,6 +4,7 @@ import(
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 )
 
 func makeRequests(url string,wg *sync.WaitGroup,ch chan int){
@@ -28,6 +29,8 @@ func main(){
 	fmt.Println("Add number of Requests = ")
 	fmt.Scanln(&numberOfRequests)
 
+	startTime := time.Now().UnixNano() / int64(time.Millisecond)
+
 	var wg sync.WaitGroup 
 	ch := make(chan int, numberOfRequests)
 	
@@ -41,6 +44,10 @@ func main(){
 		close(ch)
 	}()
 
+	endTime :=time.Now().UnixNano() / int64(time.Millisecond)
+	elapsedTime := endTime - startTime
+	
+
 	var successCnt,failuresCnt int
 
 	for StatusCode := range ch{
@@ -50,9 +57,15 @@ func main(){
 			failuresCnt +=1
 		}
 	}
-	fmt.Println("Results \n")
-	fmt.Println("Total Requests = ",successCnt+failuresCnt)
-	fmt.Println("Successful Requests = ",successCnt)
-	fmt.Println("Failed Requests = ",failuresCnt)
+	// fmt.Println(endTime," ",startTime," ",elapsedTime," ",elapsedTime.Seconds())
+	
+	fmt.Println("\nResults: \n")
+	fmt.Println("\tTotal Requests = ..........",successCnt+failuresCnt)
+	fmt.Println("\tSuccessful Requests = .....",successCnt)
+	fmt.Println("\tFailed Requests = .........",failuresCnt)
+	if elapsedTime > 0{
+		rps := int64(successCnt+failuresCnt)/elapsedTime
+		fmt.Println("\tRequests/ms = .............",rps)
+	}
 	
 }
